@@ -21,6 +21,7 @@ ENV NGINX_VER="${NGINX_VER}" \
     OWASP_CRS_VER="3.1.0" \
     NGINX_LOG_FORMAT_OVERRIDE="$$http_x_real_ip - $$request - $$status"
 
+
 RUN echo "Building nginx image containing the vhost file for : $NGINX_VHOST_PRESET"
 
 RUN set -ex; \
