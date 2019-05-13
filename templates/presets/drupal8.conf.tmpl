@@ -96,13 +96,14 @@ location / {
         expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
 
         add_header Pragma "cache";
-        add_header Cache-Control "public";
+        add_header Cache-Control "public, max-age=31536000, immutable'; ";
 
         open_file_cache {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE" "max=1000 inactive=30s" }};
         open_file_cache_valid {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_VALID" "30s" }};
         open_file_cache_min_uses {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_MIN_USES" "2" }};
         open_file_cache_errors {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_ERRORS" "off" }};
 
+        gzip_static on;
         location ~* ^.+\.(?:svgz|tgz|gz)$ {
             gzip off;
             add_header Content-Encoding gzip;

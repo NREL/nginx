@@ -16,7 +16,8 @@ ENV NGINX_VER="${NGINX_VER}" \
     NGINX_DRUPAL_HIDE_HEADERS="On" \
     NGINX_SERVER_TOKENS="off" \
     MODSECURITY_VER="3.0.3" \
-    OWASP_CRS_VER="3.1.0"
+    OWASP_CRS_VER="3.1.0" \
+    NGINX_LOG_FORMAT_OVERRIDE="$$http_x_real_ip - $$request - $$status"
 
 RUN echo "Building nginx image containing the vhost file for : $NGINX_VHOST_PRESET"
 
