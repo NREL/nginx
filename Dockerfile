@@ -13,11 +13,8 @@ ENV NGINX_VER="${NGINX_VER}" \
     APP_ROOT="/var/www/html" \
     FILES_DIR="/mnt/files" \
     NGX_MODSECURITY_VER="1.0.0" \
-    MODSECURITY_VER="3.0.3" \
-    OWASP_CRS_VER="3.1.0"
     NGINX_DRUPAL_HIDE_HEADERS="On" \
     NGINX_SERVER_TOKENS="off" \
-    NGX_MODSECURITY_VER="1.0.0" \
     MODSECURITY_VER="3.0.3" \
     OWASP_CRS_VER="3.1.0"
 
