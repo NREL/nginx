@@ -6,6 +6,8 @@ include fastcgi.conf;
 
 add_header  X-XSS-Protection '1; mode=block';
 
+fastcgi_pass_header "X-Accel-Buffering";
+
 {{ if getenv "NGINX_DRUPAL_HIDE_HEADERS" }}
 fastcgi_hide_header 'X-Drupal-Cache';
 fastcgi_hide_header 'X-Generator';
