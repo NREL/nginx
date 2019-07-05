@@ -3,6 +3,9 @@
 NGINX_VER ?= 1.17.1
 NGINX_MINOR_VER ?= $(shell echo "${NGINX_VER}" | grep -oE '^[0-9]+\.[0-9]+')
 
+REGISTRY-IDS = 407445147104
+REPO ?= $(REGISTRY-IDS).dkr.ecr.us-west-2.amazonaws.com/nrel-docker4${SITE}-nginx
+
 TAG ?= $(NGINX_MINOR_VER)
 
 ALPINE_VER ?= 3.8
@@ -13,7 +16,6 @@ else
     BASE_IMAGE_TAG := $(ALPINE_VER)-$(BASE_IMAGE_STABILITY_TAG)
 endif
 
-REPO = wodby/nginx
 NAME = nginx-$(NGINX_MINOR_VER)
 
 ifneq ($(STABILITY_TAG),)
@@ -29,6 +31,7 @@ default: build
 build:
 	docker build -t $(REPO):$(TAG) \
         --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
+      --build-arg  NGINX_VHOST_PRESET=$(NGINX_VHOST_PRESET) \
 	    --build-arg NGINX_VER=$(NGINX_VER) ./
 
 test:
