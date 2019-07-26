@@ -4,6 +4,8 @@ add_header Pragma "no-cache";
 add_header Cache-Control "no-store, no-cache, must-revalicate, post-check=0 pre-check=0";
 {{ end }}
 
+set_cookie_flag * HttpOnly secure;
+
 location ^~ /.well-known/ {
     allow all;
 }

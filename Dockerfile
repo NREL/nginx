@@ -12,6 +12,7 @@ ENV NGINX_VER="${NGINX_VER}" \
     NGX_PAGESPEED_VER=1.13.35.2 \
     APP_ROOT="/var/www/html" \
     FILES_DIR="/mnt/files" \
+    NGX_COOKIE_FLAG_VER="1.1.0" \
     NGX_MODSECURITY_VER="1.0.0" \
     NGINX_DRUPAL_HIDE_HEADERS="On" \
     NGINX_SERVER_TOKENS="off" \
@@ -120,6 +121,11 @@ RUN set -ex; \
     url="https://github.com/wodby/nginx-alpine-psol/releases/download/${MOD_PAGESPEED_VER}/psol.tar.gz"; \
     wget -qO- "${url}" | tar xz -C /tmp/ngx_pagespeed; \
     \
+    # Get ngx cookie flag module.
+    mkdir -p /tmp/nginx_cookie_flag_module; \
+    url="https://github.com/AirisX/nginx_cookie_flag_module/archive/v${NGX_COOKIE_FLAG_VER}.tar.gz"; \
+    wget -qO- "${url}" | tar xz --strip-components=1 -C /tmp/nginx_cookie_flag_module; \
+    \
     # Get ngx uploadprogress module.
     mkdir -p /tmp/ngx_http_uploadprogress_module; \
     url="https://github.com/masterzen/nginx-upload-progress-module/archive/v${NGINX_UP_VER}.tar.gz"; \
@@ -175,6 +181,7 @@ RUN set -ex; \
 		--with-stream_ssl_preread_module \
 		--with-stream_realip_module \
         --with-threads \
+        --add-module=/tmp/nginx_cookie_flag_module \
         --add-module=/tmp/ngx_http_uploadprogress_module \
         --add-dynamic-module=/tmp/ngx_pagespeed \
         --add-dynamic-module=/tmp/ngx_http_modsecurity_module; \
