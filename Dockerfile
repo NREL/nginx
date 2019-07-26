@@ -20,7 +20,11 @@ ENV NGINX_VER="${NGINX_VER}" \
     NGINX_FASTCGI_BUFFERING="off" \
     MODSECURITY_VER="3.0.3" \
     OWASP_CRS_VER="3.1.0" \
-    NGINX_LOG_FORMAT_OVERRIDE="$$http_x_real_ip - $$request - $$status"
+    NGINX_LOG_FORMAT_OVERRIDE="$$http_x_real_ip - $$request - $$status" \
+    NGINX_HIDE_50x_ERRORS="on" \
+    NGINX_ERROR_403_URI="page-not-found" \
+    NGINX_ERROR_404_URI="page-not-found" \
+    NGINX_ERROR_50X_URI="page-not-found"
 
 
 RUN echo "Building nginx image containing the vhost file for : ${NGINX_VHOST_PRESET}"

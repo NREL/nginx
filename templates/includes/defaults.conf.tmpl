@@ -62,10 +62,7 @@ location ~ /\. {
 {{ end }}
 
 {{ if getenv "NGINX_HIDE_50x_ERRORS" "on"}}
-error_page 500 502 503 504 /50x.html;
-location = /50x.html {
-    root   /usr/share/nginx/html;
-}
+error_page 500 502 503 504 {{ getenv "NGINX_ERROR_50X_URI" }};
 {{ end }}
 
 {{ if getenv "NGINX_ERROR_403_URI" }}
