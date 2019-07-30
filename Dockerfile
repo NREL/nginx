@@ -24,7 +24,6 @@ ENV NGINX_VER="${NGINX_VER}" \
     NGINX_HIDE_50x_ERRORS="on" \
     NGINX_ERROR_403_URI="page-not-found" \
     NGINX_ERROR_404_URI="page-not-found" \
-    NGINX_ERROR_50X_URI="page-not-found"
     NGINX_ERROR_50X_URI="page-not-found" \
     NGINX_DRUPAL_HIDE_HEADERS="On" \
     NGINX_SERVER_TOKENS="off" \
