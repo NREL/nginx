@@ -37,7 +37,7 @@ http {
     reset_timedout_connection   {{ getenv "NGINX_RESET_TIMEDOUT_CONNECTION" "off" }};
     tcp_nodelay                 {{ getenv "NGINX_TCP_NODELAY" "on" }};
     tcp_nopush                  {{ getenv "NGINX_TCP_NOPUSH" "on" }};
-    server_tokens               {{ getenv "NGINX_SERVER_TOKENS" "off" }};
+    server_tokens               {{ getenv "NGINX_SERVER_TOKENS" "off" }}; ## Don't show the nginx version number, a security best practice
     underscores_in_headers      {{ getenv "NGINX_UNDERSCORES_IN_HEADERS" "off" }};
 
     upload_progress             {{ getenv "NGINX_UPLOAD_PROGRESS" "uploads 1m" }};
@@ -74,9 +74,9 @@ http {
     {{ end }}
 
     {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}
-    add_header                  X-XSS-Protection '1; mode=block';
-    add_header                  X-Frame-Options SAMEORIGIN;
-    add_header                  X-Content-Type-Options nosniff;
+    add_header                  X-XSS-Protection '1; mode=block' always;
+    add_header                  X-Frame-Options SAMEORIGIN always;
+    add_header                  X-Content-Type-Options nosniff always;
     {{ end }}
 
     add_header Strict-Transport-Security "max-age=31536000";
