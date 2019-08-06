@@ -49,6 +49,8 @@ location ~ ^/\.healthz$ {
     return 204;
 }
 
+
+
 {{ if getenv "NGINX_PAGESPEED_ENABLED" }}
 {{ $pagespeed := (getenv "NGINX_PAGESPEED" "on") }}
 {{ if (eq $pagespeed "on") }}
@@ -67,8 +69,13 @@ location ~ /\. {
 }
 {{ end }}
 
-{{ if getenv "NGINX_HIDE_50x_ERRORS" "on"}}
-error_page 500 502 503 504 {{ getenv "NGINX_ERROR_50X_URI" }};
+{{ if getenv "NGINX_HIDE_50x_ERRORS" }}
+error_page 500 502 503 504 /50x.html;
+error_page 403 /50x.html;
+error_page 404 /50x.html;
+location = /50x.html {
+    root   /usr/share/nginx/html;
+}
 {{ end }}
 
 {{ if getenv "NGINX_ERROR_403_URI" }}
