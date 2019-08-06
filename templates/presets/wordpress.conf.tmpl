@@ -11,27 +11,50 @@ add_header  X-Content-Type-Options nosniff;
 add_header  Cache-Control "store, must-revalidate, post-check=0, pre-check=0";
 {{ end }}
 
-{{ if getenv "NGINX_WP_GOOGLE_XML_SITEMAP" }}
-rewrite ^/sitemap(-+([a-zA-Z0-9_-]+))?\.xml$ "/index.php?xml_sitemap=params=$2" last;
-rewrite ^/sitemap(-+([a-zA-Z0-9_-]+))?\.xml\.gz$ "/index.php?xml_sitemap=params=$2;zip=true" last;
-rewrite ^/sitemap(-+([a-zA-Z0-9_-]+))?\.html$ "/index.php?xml_sitemap=params=$2;html=true" last;
-rewrite ^/sitemap(-+([a-zA-Z0-9_-]+))?\.html.gz$ "/index.php?xml_sitemap=params=$2;html=true;zip=true" last;
-{{ end }}
-
 location / {
-    location = /readme.html {
-        return 404;
+    {{ if getenv "NGINX_WP_W3TC" }}
+    set $w3tc_rewrite 1;
+    if ($request_method = POST) {
+        set $w3tc_rewrite 0;
+    }
+    if ($query_string != "") {
+        set $w3tc_rewrite 0;
+    }
+    if ($request_uri !~ \/$) {
+        set $w3tc_rewrite 0;
+    }
+    if ($http_cookie ~* "(comment_author|wp\-postpass|w3tc_logged_out|wordpress_logged_in|wptouch_switch_toggle)") {
+        set $w3tc_rewrite 0;
+    }
+    set $w3tc_preview "";
+    if ($http_cookie ~* "(w3tc_preview)") {
+        set $w3tc_preview _preview;
+    }
+    set $w3tc_ssl "";
+    if ($scheme = https) {
+        set $w3tc_ssl _ssl;
+    }
+    if ($http_x_forwarded_proto = 'https') {
+        set $w3tc_ssl _ssl;
+    }
+    set $w3tc_enc "";
+    if ($http_accept_encoding ~ gzip) {
+        set $w3tc_enc _gzip;
+    }
+    if (!-f "$document_root/wp-content/cache/page_enhanced/$http_host/$request_uri/_index$w3tc_ssl$w3tc_preview.html$w3tc_enc") {
+      set $w3tc_rewrite 0;
+    }
+    if ($w3tc_rewrite = 1) {
+        rewrite .* "/wp-content/cache/page_enhanced/$http_host/$request_uri/_index$w3tc_ssl$w3tc_preview.html$w3tc_enc" last;
     }
 
-    location ~* /wp-content/uploads/.+\.txt {
-        access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
-        expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
-        tcp_nodelay {{ getenv "NGINX_STATIC_TCP_NODELAY" "off" }};
-        open_file_cache {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE" "max=1000 inactive=30s" }};
-        open_file_cache_valid {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_VALID" "30s" }};
-        open_file_cache_min_uses {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_MIN_USES" "2" }};
-        open_file_cache_errors {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_ERRORS" "off" }};
+    location ~ /wp-content/cache/page_enhanced.*gzip$ {
+        gzip off;
+        types {}
+        default_type text/html;
+        add_header Content-Encoding gzip;
     }
+    {{ end }}
 
     location = /readme.html {
         return 404;
@@ -54,19 +77,6 @@ location / {
     location ~* /(?:uploads|files)/.*\.php$ {
         deny all;
     }
-
-    {{ if getenv "NGINX_WP_YOAST_XML_SITEMAP" }}
-    location ~ ([^/]*)sitemap(.*).x(m|s)l$ {
-        rewrite ^/sitemap.xml$ /sitemap_index.xml permanent;
-        rewrite ^/([a-z]+)?-?sitemap.xsl$ /index.php?yoast-sitemap-xsl=$1 last;
-        rewrite ^/sitemap_index.xml$ /index.php?sitemap=1 last;
-        rewrite ^/([^/]+?)-sitemap([0-9]+)?.xml$ /index.php?sitemap=$1&sitemap_n=$2 last;
-        rewrite ^/news-sitemap.xml$ /index.php?sitemap=wpseo_news last;
-        rewrite ^/locations.kml$ /index.php?sitemap=wpseo_local_kml last;
-        rewrite ^/geo-sitemap.xml$ /index.php?sitemap=wpseo_local last;
-        rewrite ^/video-sitemap.xsl$ /index.php?yoast-sitemap-xsl=video last;
-    }
-    {{ end }}
 
     location ~* ^.+\.(?:{{ $static }})$ {
         access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};

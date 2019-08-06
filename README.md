@@ -135,6 +135,7 @@ Supported tags and respective `Dockerfile` links:
 | `NGINX_VHOST_PRESET`                                 | `html`                      |                                     |
 | `NGINX_WORKER_CONNECTIONS`                           | `1024`                      |                                     |
 | `NGINX_WORKER_PROCESSES`                             | `auto`                      |                                     |
+| `NGINX_WP_FILE_PROXY_URL`                            |                             | e.g. `http://dev.example.com`       |
 | `NGINX_WP_GOOGLE_XML_SITEMAP`                        |                             | See [WordPress]                     |
 | `NGINX_WP_YOAST_XML_SITEMAP`                         |                             | See [WordPress]                     |
 
@@ -197,11 +198,12 @@ Compiled as a dynamic module, disabled by default. To enable set `$NGINX_MODSECU
 
 Applied to all presets by default, can be disabled via `$NGINX_VHOST_NO_DEFAULTS`:
 
-- `./well-known/` location supported
-- `robots.txt` allowed
-- `favicon.ico` allowed
+- `/.well-known/` location supported
+- `/robots.txt` allowed
+- `/humans.txt` allowed
+- `/favicon.ico` allowed
 - `.flv`, `.m4a`, `.mp4`, `.mov` locations supported and handled with appropriate modules
--  `./healthz` location supported, requests not shown in access log
+-  `/.healthz` location supported, requests not shown in access log
 
 ## Customization
 
