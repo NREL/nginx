@@ -240,7 +240,9 @@ RUN set -ex; \
     rm -rf \
         /tmp/* \
         /usr/local/modsecurity \
-        /var/cache/apk/* ;
+        /var/cache/apk/* ; \
+    # Make PageSpeed cache writable:
+    chmod -R o+wr /var/cache/ngx_pagespeed;
 
 USER wodby
 
@@ -251,5 +253,8 @@ COPY docker-entrypoint.sh /
 WORKDIR $APP_ROOT
 EXPOSE 80
 
+
+
+COPY init /docker-entrypoint-init.d/
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["sudo", "nginx"]

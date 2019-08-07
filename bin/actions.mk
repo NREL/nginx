@@ -20,3 +20,6 @@ check-ready:
 
 check-live:
 	@echo "OK"
+
+flush-pagespeed-server-side-cache:
+	touch /var/cache/ngx_pagespeed/cache.flush
