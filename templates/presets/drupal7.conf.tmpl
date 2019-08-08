@@ -10,8 +10,6 @@ fastcgi_hide_header 'X-Generator';
 fastcgi_hide_header 'X-Drupal-Dynamic-Cache';
 {{ end }}
 
-add_header  X-XSS-Protection '1; mode=block';
-
 location / {
     {{ if getenv "NGINX_DRUPAL_FILE_PROXY_URL" }}
     location ~* /sites/.+/files {
@@ -63,6 +61,12 @@ location / {
         add_header ETag '';
         add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
         add_header Accept-Ranges '';
+        {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}
+        add_header X-XSS-Protection '1; mode=block' always;
+        add_header X-Frame-Options SAMEORIGIN always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Strict-Transport-Security "max-age=31536000";
+        {{ end }}
         location ~* /sites/.*/files/advagg_js/js[_[:alnum:]]+\.js$ {
             access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
             try_files $uri @drupal;
@@ -97,7 +101,12 @@ location / {
 
         add_header Pragma "cache";
         add_header Cache-Control "public";
-
+        {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}
+        add_header X-XSS-Protection '1; mode=block' always;
+        add_header X-Frame-Options SAMEORIGIN always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Strict-Transport-Security "max-age=31536000";
+        {{ end }}
         open_file_cache {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE" "max=1000 inactive=30s" }};
         open_file_cache_valid {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_VALID" "30s" }};
         open_file_cache_min_uses {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_MIN_USES" "2" }};
@@ -106,6 +115,12 @@ location / {
         location ~* ^.+\.(?:svgz|tgz|gz)$ {
             gzip off;
             add_header Content-Encoding gzip;
+            {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}
+            add_header X-XSS-Protection '1; mode=block' always;
+            add_header X-Frame-Options SAMEORIGIN always;
+            add_header X-Content-Type-Options nosniff always;
+            add_header Strict-Transport-Security "max-age=31536000";
+            {{ end }}
         }
 
         {{ if getenv "NGINX_STATIC_404_TRY_INDEX" }}
