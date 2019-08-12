@@ -62,8 +62,14 @@ http {
     pagespeed XHeaderValue              {{ getenv "NGINX_PAGESPEED_X_HEADER_VALUE" "PageSpeed" }};
 
     pagespeed RewriteLevel PassThrough;
-    pagespeed EnableCachePurge on;
-    pagespeed PurgeMethod PURGE;
+    pagespeed EnableCachePurge off;
+
+    # SharedMemoryLocks on;
+
+    # If you want, you can use one or more memcached servers as the store for
+    # the mod_pagespeed cache.
+    pagespeed MemcachedServers "ecs-low-memcache.pdwmbv.0001.usw2.cache.amazonaws.com:11211,ecs-low-memcache.pdwmbv.0002.usw2.cache.amazonaws.com:11211";
+
     {{ end }}
 
     {{ if getenv "NGINX_SET_REAL_IP_FROM" }}
