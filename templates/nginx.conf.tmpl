@@ -64,11 +64,11 @@ http {
     pagespeed RewriteLevel PassThrough;
     pagespeed EnableCachePurge off;
 
-    # SharedMemoryLocks on;
-
+    {{ if ne (getenv "WWW_NREL") "SANDBOX" }};
     # If you want, you can use one or more memcached servers as the store for
     # the mod_pagespeed cache.
     pagespeed MemcachedServers "ecs-low-memcache.pdwmbv.0001.usw2.cache.amazonaws.com:11211,ecs-low-memcache.pdwmbv.0002.usw2.cache.amazonaws.com:11211";
+    {{ end }}
 
     {{ end }}
 

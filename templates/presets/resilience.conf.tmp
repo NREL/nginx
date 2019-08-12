@@ -15,10 +15,8 @@ fastcgi_hide_header 'X-Drupal-Dynamic-Cache';
 location /resilience {
     alias /var/www/html/docroot;
 
-
-
     {{ if getenv "NGINX_DRUPAL_FILE_PROXY_URL" }}
-    location ~* /sites/.+/files {
+    location ~* /resilience/sites/.+/files {
         try_files $uri @file_proxy;
     }
     {{ end }}
