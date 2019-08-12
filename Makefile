@@ -32,7 +32,8 @@ build:
 	docker build -t $(REPO):$(TAG) \
         --build-arg BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
       --build-arg  NGINX_VHOST_PRESET=$(NGINX_VHOST_PRESET) \
-	    --build-arg NGINX_VER=$(NGINX_VER) ./
+	    --build-arg NGINX_VER=$(NGINX_VER) \
+      --build-arg TAG=${TAG} ./
 
 test:
 	cd ./tests/basic && IMAGE=$(REPO):$(TAG) ./run.sh

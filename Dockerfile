@@ -4,6 +4,7 @@ FROM wodby/alpine:3.8-2.2.3
 
 ARG NGINX_VER
 ARG NGINX_VHOST_PRESET
+ARG TAG
 
 ENV NGINX_VER="${NGINX_VER}" \
     NGINX_VHOST_PRESET="${NGINX_VHOST_PRESET}" \
@@ -24,10 +25,10 @@ ENV NGINX_VER="${NGINX_VER}" \
     NGINX_HIDE_50x_ERRORS="on" \
     NGINX_DRUPAL_HIDE_HEADERS="On" \
     NGINX_SERVER_TOKENS="off" \
-    NGX_MODSECURITY_VER="1.0.0" 
+    NGX_MODSECURITY_VER="1.0.0" \
+    DEPLOY_TAG=${TAG}
 
-
-RUN echo "Building nginx image containing the vhost file for : ${NGINX_VHOST_PRESET}"
+RUN echo "Building nginx image containing the vhost file for : ${NGINX_VHOST_PRESET} with tag ${TAG}"
 
 RUN set -ex; \
     \

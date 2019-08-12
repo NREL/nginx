@@ -67,6 +67,8 @@ sudo init_volumes
 process_templates
 exec_init_scripts
 
+echo "Nginx version ${NGINX_VER} is running with preset ${NGINX_VHOST_PRESET} with a tag of ${DEPLOY_TAG}."
+
 if [[ "${1}" == "make" ]]; then
     exec "${@}" -f /usr/local/bin/actions.mk
 else
