@@ -64,12 +64,18 @@ http {
     pagespeed RewriteLevel PassThrough;
     pagespeed EnableCachePurge off;
 
+    pagespeed FileCacheSizeKb            102400;
+    pagespeed FileCacheCleanIntervalMs   3600000;
+    pagespeed FileCacheInodeLimit        500000;
+
+    pagespeed LRUCacheKbPerProcess     8192;
+    pagespeed LRUCacheByteLimit        16384;
+
     {{ if ne (getenv "WWW_NREL") "SANDBOX" }}
     # If you want, you can use one or more memcached servers as the store for
     # the mod_pagespeed cache.
     pagespeed MemcachedServers "ecs-low-memcache.pdwmbv.0001.usw2.cache.amazonaws.com:11211,ecs-low-memcache.pdwmbv.0002.usw2.cache.amazonaws.com:11211";
     {{ end }}
-
     {{ end }}
 
     {{ if getenv "NGINX_SET_REAL_IP_FROM" }}
@@ -80,7 +86,24 @@ http {
     real_ip_recursive {{ getenv "NGINX_REAL_IP_RECURSIVE" "off" }};
 
     {{ if getenv "NGINX_PAGESPEED_ENABLE_FILTERS" }}
-    pagespeed EnableFilters         {{ getenv "NGINX_PAGESPEED_ENABLE_FILTERS" "prioritize_critical_css"}};
+    pagespeed EnableFilters {{ getenv "NGINX_PAGESPEED_ENABLE_FILTERS" "remove_comments,collapse_whitespace,rewrite_images,resize_images,resize_rendered_image_dimensions,prioritize_critical_css,insert_dns_prefetch,combine_css,rewrite_css,combine_javascript,rewrite_javascript;"}};
+
+    pagespeed RespectVary on;
+    pagespeed CriticalImagesBeaconEnabled false;
+
+    pagespeed StatisticsPath /ngx_pagespeed_statistics;
+    pagespeed GlobalStatisticsPath /ngx_pagespeed_global_statistics;
+    pagespeed MessagesPath /ngx_pagespeed_message;
+    pagespeed ConsolePath /pagespeed_console;
+    pagespeed AdminPath /pagespeed_admin;
+    pagespeed GlobalAdminPath /pagespeed_global_admin;
+
+    pagespeed MessageBufferSize 200000;
+    pagespeed Statistics on;
+    pagespeed StatisticsLogging on;
+    # pagespeed LogDir /var/log/pagespeed;
+    # pagespeed StatisticsLoggingIntervalMs 60000;
+    # pagespeed StatisticsLoggingMaxFileSizeKb 1024;
     {{ end }}
 
     {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}

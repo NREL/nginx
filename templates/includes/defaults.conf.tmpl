@@ -86,3 +86,6 @@ error_page 403 {{ getenv "NGINX_ERROR_403_URI" }};
 {{ if getenv "NGINX_ERROR_404_URI" }}
 error_page 404 {{ getenv "NGINX_ERROR_404_URI" }};
 {{ end }}
+
+
+location /ngx_pagespeed_statistics { allow 127.0.0.1; deny all; }
