@@ -13,14 +13,15 @@ fastcgi_hide_header 'X-Drupal-Dynamic-Cache';
 {{ end }}
 
 location /resilience {
-    alias /var/www/html/docroot;
+
+    alias /var/www/html/web;
 
     {{ if getenv "NGINX_DRUPAL_FILE_PROXY_URL" }}
-    location ~* /resilience/sites/.+/files {
+    location ~* /sites/.+/files {
         try_files $uri @file_proxy;
     }
     {{ end }}
-    location ~* /resilience/system/files/ {
+    location ~* /system/files/ {
         include fastcgi.conf;
         fastcgi_param QUERY_STRING $query_string;
         fastcgi_param SCRIPT_NAME /index.php;
@@ -29,17 +30,17 @@ location /resilience {
         log_not_found off;
     }
 
-    location ~* /resilience/sites/.+/files/private/ {
+    location ~* /sites/.+/files/private/ {
         internal;
     }
 
-    location ~* /resilience/files/styles/ {
+    location ~* /files/styles/ {
         access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
         expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
         try_files $uri @drupal;
     }
 
-    location ~* /resilience/sites/.+/files/.+\.txt {
+    location ~* /sites/.+/files/.+\.txt {
         access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
         expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
         tcp_nodelay {{ getenv "NGINX_STATIC_TCP_NODELAY" "off" }};
@@ -49,7 +50,7 @@ location /resilience {
         open_file_cache_errors {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_ERRORS" "off" }};
     }
 
-    location ~* /resilience/sites/.+/files/advagg_css/ {
+    location ~* /sites/.+/files/advagg_css/ {
         expires max;
         add_header ETag '';
         add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
@@ -60,13 +61,13 @@ location /resilience {
         add_header X-Content-Type-Options nosniff always;
         add_header Strict-Transport-Security "max-age=31536000";
         {{ end }}
-        location ~* /resilience/sites/.*/files/advagg_css/css[_[:alnum:]]+\.css$ {
+        location ~* /sites/.*/files/advagg_css/css[_[:alnum:]]+\.css$ {
             access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
             try_files $uri @drupal;
         }
     }
 
-    location ~* /resilience/sites/.+/files/advagg_js/ {
+    location ~* /sites/.+/files/advagg_js/ {
         expires max;
         add_header ETag '';
         add_header Last-Modified 'Wed, 20 Jan 1988 04:20:42 GMT';
@@ -77,13 +78,13 @@ location /resilience {
         add_header X-Content-Type-Options nosniff always;
         add_header Strict-Transport-Security "max-age=31536000";
         {{ end }}
-        location ~* /resilience/sites/.*/files/advagg_js/js[_[:alnum:]]+\.js$ {
+        location ~* /sites/.*/files/advagg_js/js[_[:alnum:]]+\.js$ {
             access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
             try_files $uri @drupal;
         }
     }
 
-    location ~* /resilience/admin/reports/hacked/.+/diff/ {
+    location ~* /admin/reports/hacked/.+/diff/ {
         try_files $uri @drupal;
     }
     {{ if getenv "NGINX_DRUPAL_ALLOW_XML_ENDPOINTS" }}
@@ -131,7 +132,7 @@ location /resilience {
             add_header X-Frame-Options SAMEORIGIN always;
             add_header X-Content-Type-Options nosniff always;
             add_header Strict-Transport-Security "max-age=31536000";
-            {{ end }}
+        {{ end }}
         }
 
         {{ if getenv "NGINX_STATIC_404_TRY_INDEX" }}
@@ -149,7 +150,6 @@ location @file_proxy {
 {{ end }}
 
 location @drupal {
-    rewrite /resilience/(.*)$ /resilience/index.php?/$1 last;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $query_string;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -222,4 +222,8 @@ location ~ (?<upload_form_uri>.*)/x-progress-id:(?<upload_id>\d*) {
 location ~ ^/progress$ {
     upload_progress_json_output;
     report_uploads uploads;
+}
+
+location @resilience {
+    rewrite /resilience/(.*)$ /resilience/index.php?/$1 last;
 }
