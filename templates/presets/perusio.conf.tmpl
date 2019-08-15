@@ -12,7 +12,20 @@ fastcgi_hide_header 'X-Generator';
 fastcgi_hide_header 'X-Drupal-Dynamic-Cache';
 {{ end }}
 
-location /$drupal_dir {
+add_header X-debug-message "$drupal_dir was set" always;
+add_header X-debug-message "request_method: $request_method" always;
+add_header X-debug-message "request_uri: $request_uri" always;
+add_header X-debug-message "document_uri: $document_uri" always;
+add_header X-debug-message "document_root: $document_root" always;
+add_header X-debug-message "server_name: $server_name" always;
+add_header X-debug-message "query_string: $query_string" always;
+add_header X-debug-message "fastcgi_script_name: $fastcgi_script_name" always;
+add_header X-debug-message "document_root: $document_root" always;
+add_header X-debug-message "fastcgi_script_name: $fastcgi_script_name" always;
+
+location /$drupal_dir/ {
+    alias /var/www/html/docroot;
+    add_header X-debug-message "$drupal_dir location was used" always;
     {{ if getenv "NGINX_DRUPAL_FILE_PROXY_URL" }}
     location ~* /$drupal_dir/sites/.+/files {
         try_files $uri @file_proxy;
@@ -136,7 +149,8 @@ location /$drupal_dir {
         try_files $uri @drupal;
         {{ end }}
     }
-
+     add_header X-debug-message "trying $uri with @drupal" always;
+    ## First we try the URI and relay to the /index.php?q=$uri&$args if not found.
      try_files $uri @drupal;
 }
 
@@ -147,6 +161,7 @@ location @file_proxy {
 {{ end }}
 
 location @drupal {
+    add_header X-debug-message "@drupal drupal location was used" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $query_string;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -157,6 +172,7 @@ location @drupal {
 }
 
 location @drupal-no-args {
+    add_header X-debug-message "@drupal-no-args drupal-no-args location was used" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING q=$uri;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -165,10 +181,13 @@ location @drupal-no-args {
 }
 
 location = /$drupal_dir/index.php {
+    add_header X-debug-message "$drupal_dir/index.php location was used" always;
     fastcgi_pass php;
 }
 
 location = /$drupal_dir/core/install.php {
+    alias /var/www/html/docroot;
+    add_header X-debug-message "$drupal_dir/core/install.php location location was used" always;
     fastcgi_pass php;
 }
 
