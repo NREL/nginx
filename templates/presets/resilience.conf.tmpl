@@ -146,16 +146,20 @@ location /resilience {
 
     location ~ \.php$ {
         include fastcgi.conf;
-        fastcgi_param QUERY_STRING $query_string;
-        fastcgi_param SCRIPT_NAME /index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root/index.php;
+        fastcgi_param SCRIPT_FILENAME $request_filename;
         fastcgi_param WWW_NREL {{ getenv "WWW_NREL" "PROD" }};
+        include fastcgi_params;
         fastcgi_pass php;
-        track_uploads {{ getenv "NGINX_TRACK_UPLOADS" "uploads 60s" }};
+        track_uploads uploads 60s;
+
+
     }
+
+
 }
 
 location @resilience {
+    # here is where I need to be smarter
     rewrite /resilience/(.*)$ /resilience/index.php?/$1 last;
 }
 
