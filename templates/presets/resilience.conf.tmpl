@@ -13,7 +13,7 @@ fastcgi_hide_header 'X-Drupal-Dynamic-Cache';
 {{ end }}
 
 location /resilience {
-
+    add_header X-debug-message "/resilience location was set" always;
     alias /var/www/html/docroot;
 
     try_files $uri $uri/ @resilience;
@@ -145,20 +145,28 @@ location /resilience {
     # try_files $uri @drupal;
 
     location ~ \.php$ {
-        include fastcgi.conf;
-        fastcgi_param SCRIPT_FILENAME $request_filename;
-        fastcgi_param WWW_NREL {{ getenv "WWW_NREL" "PROD" }};
-        include fastcgi_params;
-        fastcgi_pass php;
-        track_uploads uploads 60s;
-
-
+         add_header X-debug-message "/.php location was set" always;
+         include fastcgi.conf;
+         fastcgi_param SCRIPT_FILENAME $request_filename;
+         fastcgi_param WWW_NREL {{ getenv "WWW_NREL" "PROD" }};
+         include fastcgi_params;
+         fastcgi_pass php;
+         track_uploads uploads 60s;
     }
-
-
 }
 
+# cannot be nested, and cannot contain nested locations.
 location @resilience {
+    add_header X-debug-message "@resilience named location was set used for request redirection" always;
+    add_header X-debug-message "request_method: $request_method" always;
+    add_header X-debug-message "request_uri: $request_uri" always;
+    add_header X-debug-message "document_uri: $document_uri" always;
+    add_header X-debug-message "document_root: $document_root" always;
+    add_header X-debug-message "server_name: $server_name" always;
+    add_header X-debug-message "query_string: $query_string" always;
+    add_header X-debug-message "fastcgi_script_name: $fastcgi_script_name" always;
+    add_header X-debug-message "document_root: $document_root" always;
+    add_header X-debug-message "fastcgi_script_name: $fastcgi_script_name" always;
     # here is where I need to be smarter
     rewrite /resilience/(.*)$ /resilience/index.php?/$1 last;
 }
@@ -170,6 +178,7 @@ location @file_proxy {
 {{ end }}
 
 location @drupal {
+    add_header X-debug-message "@drupal named location was set used for request redirection" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $query_string;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -180,6 +189,7 @@ location @drupal {
 }
 
 location @drupal-no-args {
+    add_header X-debug-message "@drupal-no-args named location was set used for request redirection" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING q=$uri;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -188,14 +198,17 @@ location @drupal-no-args {
 }
 
 location = /index.php {
+    add_header X-debug-message "/index location was set" always;
     fastcgi_pass php;
 }
 
 location = /core/install.php {
+    add_header X-debug-message "/core/install.php location was set" always;
     fastcgi_pass php;
 }
 
 location ~* ^/core/authorize.php {
+    add_header X-debug-message "/core/authorize.php location was set" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /core/authorize.php;
@@ -204,10 +217,12 @@ location ~* ^/core/authorize.php {
 }
 
 location = /core/modules/statistics/statistics.php {
+    add_header X-debug-message "/core/modules/statistics location was set" always;
     fastcgi_pass php;
 }
 
 location = /cron {
+    add_header X-debug-message "/cron location was set" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -216,6 +231,7 @@ location = /cron {
 }
 
 location ~* ^/update.php {
+    add_header X-debug-message "/update.php location was set" always;
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /update.php;
@@ -224,10 +240,12 @@ location ~* ^/update.php {
 }
 
 location ^~ /patches {
+    add_header X-debug-message "/patches location was set" always;
     return 404;
 }
 
 location ^~ /backup {
+    add_header X-debug-message "/backup location was set" always;
     return 404;
 }
 
@@ -240,6 +258,7 @@ location ~ (?<upload_form_uri>.*)/x-progress-id:(?<upload_id>\d*) {
 }
 
 location ~ ^/progress$ {
+    add_header X-debug-message "/progress$ location was set" always;
     upload_progress_json_output;
     report_uploads uploads;
 }
