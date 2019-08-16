@@ -13,7 +13,9 @@ fastcgi_hide_header 'X-Drupal-Dynamic-Cache';
 {{ end }}
 
 location /resilience {
-    add_header X-debug-message "/resilience location was set" always;
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
+    add_header X-debug-message "resilience location was set" always;
+    {{ end }}
     alias /var/www/html/docroot;
 
     try_files $uri $uri/ @resilience;
@@ -145,7 +147,16 @@ location /resilience {
     # try_files $uri @drupal;
 
     location ~ \.php$ {
-         add_header X-debug-message "/.php location was set" always;
+         {{ if getenv "NGINX_DEBUG_HEADERS" }}
+         add_header X-debug-message-1 "/.php location was set" always;
+         add_header X-debug-message-2 "request_method: $request_method" always;
+         add_header X-debug-message-3 "request_uri: $request_uri" always;
+         add_header X-debug-message-4 "document_uri: $document_uri" always;
+         add_header X-debug-message-5 "document_root: $document_root" always;
+         add_header X-debug-message-6 "server_name: $server_name" always;
+         add_header X-debug-message-7 "query_string: $query_string" always;
+         add_header X-debug-message-8 "fastcgi_script_name: $fastcgi_script_name" always;
+         {{ end }}
          include fastcgi.conf;
          fastcgi_param SCRIPT_FILENAME $request_filename;
          fastcgi_param WWW_NREL {{ getenv "WWW_NREL" "PROD" }};
@@ -157,7 +168,8 @@ location /resilience {
 
 # cannot be nested, and cannot contain nested locations.
 location @resilience {
-    add_header X-debug-message "@resilience named location was set used for request redirection" always;
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
+    add_header X-debug-message "resilience named location was set used for request redirection" always;
     add_header X-debug-message "request_method: $request_method" always;
     add_header X-debug-message "request_uri: $request_uri" always;
     add_header X-debug-message "document_uri: $document_uri" always;
@@ -165,10 +177,8 @@ location @resilience {
     add_header X-debug-message "server_name: $server_name" always;
     add_header X-debug-message "query_string: $query_string" always;
     add_header X-debug-message "fastcgi_script_name: $fastcgi_script_name" always;
-    add_header X-debug-message "document_root: $document_root" always;
-    add_header X-debug-message "fastcgi_script_name: $fastcgi_script_name" always;
-    # here is where I need to be smarter
-    rewrite /resilience/(.*)$ /resilience/index.php?/$1 last;
+    {{ end }}
+    rewrite ^/resilience/(.*)$ /resilience/index.php?q=$1 last;
 }
 
 {{ if getenv "NGINX_DRUPAL_FILE_PROXY_URL" }}
@@ -178,7 +188,9 @@ location @file_proxy {
 {{ end }}
 
 location @drupal {
-    add_header X-debug-message "@drupal named location was set used for request redirection" always;
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
+    add_header X-debug-message "drupal named location was set used for request redirection" always;
+    {{ end }}
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $query_string;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -189,7 +201,9 @@ location @drupal {
 }
 
 location @drupal-no-args {
-    add_header X-debug-message "@drupal-no-args named location was set used for request redirection" always;
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
+    add_header X-debug-message "drupal-no-args named location was set used for request redirection" always;
+    {{ end }}
     include fastcgi.conf;
     fastcgi_param QUERY_STRING q=$uri;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -198,17 +212,23 @@ location @drupal-no-args {
 }
 
 location = /index.php {
-    add_header X-debug-message "/index location was set" always;
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
+    add_header X-debug-message "index location was set" always;
+    {{ end }}
     fastcgi_pass php;
 }
 
 location = /core/install.php {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/core/install.php location was set" always;
+    {{ end }}
     fastcgi_pass php;
 }
 
 location ~* ^/core/authorize.php {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/core/authorize.php location was set" always;
+    {{ end }}
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /core/authorize.php;
@@ -217,12 +237,16 @@ location ~* ^/core/authorize.php {
 }
 
 location = /core/modules/statistics/statistics.php {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/core/modules/statistics location was set" always;
+    {{ end }}
     fastcgi_pass php;
 }
 
 location = /cron {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/cron location was set" always;
+    {{ end }}
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /index.php;
@@ -231,7 +255,9 @@ location = /cron {
 }
 
 location ~* ^/update.php {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/update.php location was set" always;
+    {{ end }}
     include fastcgi.conf;
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /update.php;
@@ -240,12 +266,16 @@ location ~* ^/update.php {
 }
 
 location ^~ /patches {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/patches location was set" always;
+    {{ end }}
     return 404;
 }
 
 location ^~ /backup {
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
     add_header X-debug-message "/backup location was set" always;
+    {{ end }}
     return 404;
 }
 
@@ -258,7 +288,9 @@ location ~ (?<upload_form_uri>.*)/x-progress-id:(?<upload_id>\d*) {
 }
 
 location ~ ^/progress$ {
-    add_header X-debug-message "/progress$ location was set" always;
+    {{ if getenv "NGINX_DEBUG_HEADERS" }}
+    add_header X-debug-message "/progress location was set" always;
+    {{ end }}
     upload_progress_json_output;
     report_uploads uploads;
 }
