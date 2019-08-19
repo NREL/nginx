@@ -279,9 +279,9 @@ location ^~ /backup {
     return 404;
 }
 
-location ~* ^.+\.php$ {
-    return 404;
-}
+# location ~* ^.+\.php$ {
+#     return 404;
+# }
 
 location ~ (?<upload_form_uri>.*)/x-progress-id:(?<upload_id>\d*) {
     rewrite ^ $upload_form_uri?X-Progress-ID=$upload_id;
