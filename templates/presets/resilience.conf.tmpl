@@ -128,6 +128,7 @@ location /resilience {
         open_file_cache_errors {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_ERRORS" "off" }};
 
         gzip_static on;
+        brotli_static on;
         location ~* ^/resilience/.+\.(?:svgz|tgz|gz)$ {
             gzip off;
             add_header Content-Encoding gzip;

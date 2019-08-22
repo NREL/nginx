@@ -124,6 +124,11 @@ RUN set -ex; \
           https://github.com/apache/incubator-pagespeed-ngx.git \
           /tmp/ngx_pagespeed; \
     \
+    # Ngx_bortli
+    cd /tmp; \
+    git clone --depth 1 -b --single-branch --recursive https://github.com/google/ngx_brotli.git \
+    /tmp/ngx_brotli; \
+    \
     # Get psol for alpine.
     url="https://github.com/wodby/nginx-alpine-psol/releases/download/${MOD_PAGESPEED_VER}/psol.tar.gz"; \
     wget -qO- "${url}" | tar xz -C /tmp/ngx_pagespeed; \
@@ -189,6 +194,7 @@ RUN set -ex; \
 		--with-stream_realip_module \
         --with-threads \
         --add-module=/tmp/nginx_cookie_flag_module \
+        --add-module=/tmp/ngx_brotli \
         --add-module=/tmp/ngx_http_uploadprogress_module \
         --add-dynamic-module=/tmp/ngx_pagespeed \
         --add-dynamic-module=/tmp/ngx_http_modsecurity_module; \
