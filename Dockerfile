@@ -126,7 +126,7 @@ RUN set -ex; \
     \
     # Ngx_bortli
     cd /tmp; \
-    git clone --depth 1 -b --single-branch --recursive https://github.com/google/ngx_brotli.git \
+    git clone --depth 1 -b master --single-branch --recursive https://github.com/google/ngx_brotli.git \
     /tmp/ngx_brotli; \
     \
     # Get psol for alpine.
