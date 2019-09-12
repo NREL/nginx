@@ -69,6 +69,31 @@ exec_init_scripts
 
 echo "Nginx version ${NGINX_VER} is running with preset ${NGINX_VHOST_PRESET} with a tag of ${DEPLOY_TAG}."
 
+echo
+echo
+echo "Let's confirm we see /var/www/common filesystem and audit permissions."
+
+if [[ ! -d "/var/www/common" ]]; then
+    echo >&2 "/var/www/common/ not found...contact the AWS team to have them fix."
+else
+    echo "/var/www/common dir listing"
+    ls -al /var/www/common
+    echo
+    echo
+    echo "/var/www/common/files dir listing"
+    ls -la /var/www/common/files | head -32
+    echo
+    echo
+    echo "/var/www/common/tmp dir listing"
+    ls -la /var/www/common/tmp | head -32
+fi
+
+if [[ ! -d "/var/www/common/log" ]]; then
+    echo >&2 "/var/www/common/log not found...creating"
+    mkdir -p /var/www/common/log
+    chown -R nginx /var/www/common/log
+fi
+
 if [[ "${1}" == "make" ]]; then
     exec "${@}" -f /usr/local/bin/actions.mk
 else
