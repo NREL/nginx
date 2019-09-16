@@ -28,7 +28,10 @@ ENV NGINX_VER="${NGINX_VER}" \
     NGINX_SERVER_TOKENS="off" \
     NGX_MODSECURITY_VER="1.0.0" \
     DEPLOY_TAG=${TAG} \
-    NGINX_SERVER_NAME=${SITE}
+    NGINX_SERVER_NAME=${SITE} \
+    NGINX_USER="www-data" \
+    NGINX_GROUP="www-data" 
+
 
 RUN echo "Building nginx image containing the vhost file for : ${NGINX_VHOST_PRESET} with tag ${TAG}"
 
@@ -36,7 +39,10 @@ RUN set -ex; \
     \
     addgroup -S nginx; \
     adduser -S -D -H -h /var/cache/nginx -s /sbin/nologin -G nginx nginx; \
-    \
+  \
+  addgroup -g 82 -S www-data; \
+  adduser -u 82 -S -D -H  -h /home/www-data  -s /sbin/nologin -G www-data www-data; \
+  \
 	addgroup -g 1000 -S wodby; \
 	adduser -u 1000 -D -S -s /bin/bash -G wodby wodby; \
 	sed -i '/^wodby/s/!/*/' /etc/shadow; \
@@ -162,8 +168,8 @@ RUN set -ex; \
         --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
         --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
         --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-        --user=nginx \
-        --group=nginx \
+        --user=${NGINX_USER} \
+        --group=${NGINX_GROUP} \
         --with-compat \
         --with-file-aio \
         --with-http_addition_module \

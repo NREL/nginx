@@ -110,6 +110,8 @@ else
     echo
     echo "/var/www/common/log dir listing"
     ls -la /var/www/common/log | head -32
+    echo
+    echo
 fi
 
 if [[ "${1}" == "make" ]]; then
