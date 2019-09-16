@@ -72,7 +72,27 @@ echo "Nginx version ${NGINX_VER} is running with preset ${NGINX_VHOST_PRESET} wi
 echo
 echo
 echo "Let's confirm we see /var/www/common filesystem and audit permissions."
-
+echo
+echo
+echo Running as user ${NGINX_USER}
+echo
+echo
+echo View system processes.
+echo
+echo
+/bin/ps -ef
+echo
+echo
+echo List attached filesystems
+echo
+echo
+/bin/df -hi
+echo "Let's audit /var/www/common filesystem and peak at permissions."
+echo
+echo
+/bin/df -hi /var/www/common
+echo
+echo
 if [[ ! -d "/var/www/common" ]]; then
     echo >&2 "/var/www/common/ not found...contact the AWS team to have them fix."
 else
@@ -86,12 +106,10 @@ else
     echo
     echo "/var/www/common/tmp dir listing"
     ls -la /var/www/common/tmp | head -32
-fi
-
-if [[ ! -d "/var/www/common/log" ]]; then
-    echo >&2 "/var/www/common/log not found...creating"
-    mkdir -p /var/www/common/log
-    chown -R nginx /var/www/common/log
+    echo
+    echo
+    echo "/var/www/common/log dir listing"
+    ls -la /var/www/common/log | head -32
 fi
 
 if [[ "${1}" == "make" ]]; then
