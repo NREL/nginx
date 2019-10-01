@@ -38,6 +38,12 @@ location /resilience {
         internal;
     }
 
+    location = /resilience/robots.txt {
+        allow all;
+        log_not_found off;
+        access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
+    }
+
     location ~* /resilience/files/styles/ {
         access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
         expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
