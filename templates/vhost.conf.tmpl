@@ -22,4 +22,9 @@ server {
     {{ if getenv "NGINX_SERVER_EXTRA_CONF_FILEPATH" }}
     include {{ getenv "NGINX_SERVER_EXTRA_CONF_FILEPATH" }};
     {{ end }}
+
+    {{ if getenv "NGINX_HTTP_COOKIE_FLAG_ENABLED" }}
+    set_cookie_flag HttpOnly Secure;
+    {{ end }}
+
 }

@@ -188,9 +188,9 @@ RUN set -ex; \
 		--with-stream_ssl_preread_module \
 		--with-stream_realip_module \
         --with-threads \
-        --add-module=/tmp/nginx_cookie_flag_module \
         --add-module=/tmp/ngx_brotli \
         --add-module=/tmp/ngx_http_uploadprogress_module \
+        --add-dynamic-module=/tmp/nginx_cookie_flag_module \
         --add-dynamic-module=/tmp/ngx_pagespeed \
         --add-dynamic-module=/tmp/ngx_http_modsecurity_module; \
     \
@@ -212,6 +212,9 @@ RUN set -ex; \
         /var/cache/ngx_pagespeed \
         /pagespeed_static \
         /ngx_pagespeed_beacon; \
+    \
+    install -g nginx -o nginx -d \
+        /var/cache/nginx_cookie_flag_module; \
     \
     install -m 400 -d /etc/nginx/pki; \
     strip /usr/sbin/nginx*; \
