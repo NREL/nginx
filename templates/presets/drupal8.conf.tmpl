@@ -153,7 +153,6 @@ location @drupal {
     fastcgi_param SCRIPT_NAME /index.php;
     fastcgi_param SCRIPT_FILENAME $document_root/index.php;
     fastcgi_param WWW_NREL {{ getenv "WWW_NREL" "PROD" }};
-    fastcgi_param SIMPLESAMLPHP_CONFIG_DIR {{ getenv "SIMPLESAMLPHP_CONFIG_DIR" "/var/wwww/common/simplesamlphp/config" }};
     fastcgi_pass php;
     track_uploads {{ getenv "NGINX_TRACK_UPLOADS" "uploads 60s" }};
 }
