@@ -4,10 +4,6 @@ add_header Pragma "no-cache";
 add_header Cache-Control "no-store, no-cache, must-revalicate, post-check=0 pre-check=0";
 {{ end }}
 
-location ^~ /.well-known/ {
-    allow all;
-}
-
 location = /favicon.ico {
     expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
     try_files /favicon.ico @empty;
@@ -62,14 +58,27 @@ location ~ "^/ngx_pagespeed_beacon$" { }
 {{ end }}
 
 {{ if not (getenv "NGINX_ALLOW_ACCESS_HIDDEN_FILES") }}
-location ~ /\. {
+location ~ /\.(!?well-known) {
     deny all;
 }
 {{ end }}
 
+
 {{ if eq (getenv "NGINX_HIDE_50x_ERRORS") "on" }}
 error_page 400 401 402 403 404 405 406 407 408 409 410 411 412 413 414 415 416 417 418 421 422 423 424 426 428 429 431 451 500 501 502 503 504 505 506 507 508
 510 511 =404 /50x.html;
+
+location ~ /wodby\.yml {
+    deny all;
+}
+
+location ~ /Makefile {
+    deny all;
+}
+
+{{ if getenv "NGINX_HIDE_50x_ERRORS" }}
+error_page 500 502 503 504 /50x.html;
+>>>>>>> 5.8.5
 location = /50x.html {
     root   /usr/share/nginx/html;
     internal;
