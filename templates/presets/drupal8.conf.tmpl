@@ -201,6 +201,22 @@ location ~* ^/update.php {
     fastcgi_pass php;
 }
 
+location ~* ^/import-old-data-from-json.php {
+    include fastcgi.conf;
+    fastcgi_param QUERY_STRING $args;
+    fastcgi_param SCRIPT_NAME /import-old-data-from-json.php;
+    fastcgi_param SCRIPT_FILENAME $document_root/import-old-data-from-json.php;
+    fastcgi_pass php;
+}
+
+location ~* ^/create-default-content.php {
+    include fastcgi.conf;
+    fastcgi_param QUERY_STRING $args;
+    fastcgi_param SCRIPT_NAME /create-default-content.php;
+    fastcgi_param SCRIPT_FILENAME $document_root/create-default-content.php;
+    fastcgi_pass php;
+}
+
 location ^~ /patches {
     return 404;
 }
