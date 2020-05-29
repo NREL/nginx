@@ -104,12 +104,24 @@ else
     ls -la /var/www/common/files | head -32
     echo
     echo
-    echo "/var/www/common/tmp dir listing"
-    ls -la /var/www/common/tmp | head -32
+    if [[ ! -d "/var/www/common/tmp" ]]; then
+            echo >&2 "/var/www/common/tmp not found...creating"
+            mkdir -p /var/www/common/tmp
+            chown -R ${user}:${group} /var/www/common/tmp
+            chmod -R 777 /var/www/common/tmp
+    else
+        echo "/var/www/common/tmp dir listing"
+        ls -la /var/www/common/tmp | head -32
+    fi
     echo
     echo
-    echo "/var/www/common/log dir listing"
-    ls -la /var/www/common/log | head -32
+    if [[ ! -d "/var/www/common/log" ]]; then
+        echo >&2 "/var/www/common/log not found...creating"
+        mkdir -p /var/www/common/log
+    else
+        echo "/var/www/common/log dir listing"
+        ls -la /var/www/common/log | head -32
+    fi
     echo
     echo
 fi
