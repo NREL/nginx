@@ -160,7 +160,7 @@ location = /index.php {
 }
 
 location = /core/install.php {
-    fastcgi_pass php;
+    return 404;
 }
 
 location = /core/rebuild.php {
