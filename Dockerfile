@@ -1,6 +1,6 @@
 ARG BASE_IMAGE_TAG
 
-FROM wodby/alpine:3.8-2.2.3
+FROM wodby/alpine:3.8-2.5.0
 
 ARG NGINX_VER
 ARG TAG
@@ -8,7 +8,6 @@ ARG TAG
 ENV NGINX_VER="${NGINX_VER}" \
     APP_ROOT="/var/www/html" \
     FILES_DIR="/mnt/files" \
-
     NGINX_VHOST_PRESET="html" \
     NGX_COOKIE_FLAG_VER="1.1.0" \
     NGX_MODSECURITY_VER="1.0.0" \
@@ -17,7 +16,7 @@ ENV NGINX_VER="${NGINX_VER}" \
     OWASP_CRS_VER="3.1.0" \
     NGINX_LOG_FORMAT_OVERRIDE="$$http_x_real_ip - $$request - $$status" \
     NGX_MODSECURITY_VER="1.0.0" \
-    DEPLOY_TAG=${TAG} 
+    DEPLOY_TAG=${TAG}
 
 
 RUN echo "Building nginx image containing the vhost file for : ${NGINX_VHOST_PRESET} with tag ${TAG}"
@@ -37,10 +36,10 @@ RUN set -ex; \
   addgroup -g 82 -S www-data; \
   adduser -u 82 -S -D -H  -h /home/www-data  -s /sbin/nologin -G www-data www-data; \
   \
-	addgroup -g 1000 -S wodby; \
-	adduser -u 1000 -D -S -s /bin/bash -G wodby wodby; \
-	sed -i '/^wodby/s/!/*/' /etc/shadow; \
-	echo "PS1='\w\$ '" >> /home/wodby/.bashrc; \
+  addgroup -g 1000 -S wodby; \
+  adduser -u 1000 -D -S -s /bin/bash -G wodby wodby; \
+  sed -i '/^wodby/s/!/*/' /etc/shadow; \
+  echo "PS1='\w\$ '" >> /home/wodby/.bashrc; \
     \
     apk add --update --no-cache -t .tools \
         findutils \
@@ -173,17 +172,17 @@ RUN set -ex; \
         --with-http_flv_module \
         --with-http_gunzip_module \
         --with-http_gzip_static_module \
-		--with-http_image_filter_module=dynamic \
+    --with-http_image_filter_module=dynamic \
         --with-http_mp4_module \
         --with-http_random_index_module \
         --with-http_realip_module \
         --with-http_secure_link_module \
-		--with-http_slice_module \
+    --with-http_slice_module \
         --with-http_ssl_module \
         --with-http_stub_status_module \
         --with-http_sub_module \
         --with-http_v2_module \
-		--with-http_xslt_module=dynamic \
+    --with-http_xslt_module=dynamic \
         --with-ipv6 \
         --with-ld-opt="-Wl,-z,relro,--start-group -lapr-1 -laprutil-1 -licudata -licuuc -lpng -lturbojpeg -ljpeg" \
         --with-mail \
@@ -191,8 +190,8 @@ RUN set -ex; \
         --with-pcre-jit \
         --with-stream \
         --with-stream_ssl_module \
-		--with-stream_ssl_preread_module \
-		--with-stream_realip_module \
+    --with-stream_ssl_preread_module \
+    --with-stream_realip_module \
         --with-threads \
         --add-module=/tmp/ngx_brotli \
         --add-module=/tmp/ngx_http_uploadprogress_module \
@@ -229,13 +228,13 @@ RUN set -ex; \
     \
     for i in /usr/lib/nginx/modules/*.so; do ln -s "${i}" /usr/share/nginx/modules/; done; \
     \
-	runDeps="$( \
-		scanelf --needed --nobanner --format '%n#p' /usr/sbin/nginx /usr/local/modsecurity/lib/*.so /usr/lib/nginx/modules/*.so /tmp/envsubst \
-			| tr ',' '\n' \
-			| sort -u \
-			| awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
-	)"; \
-	apk add --no-cache --virtual .nginx-rundeps $runDeps; \
+  runDeps="$( \
+    scanelf --needed --nobanner --format '%n#p' /usr/sbin/nginx /usr/local/modsecurity/lib/*.so /usr/lib/nginx/modules/*.so /tmp/envsubst \
+      | tr ',' '\n' \
+      | sort -u \
+      | awk 'system("[ -e /usr/local/lib/" $1 " ]") == 0 { next } { print "so:" $1 }' \
+  )"; \
+  apk add --no-cache --virtual .nginx-rundeps $runDeps; \
     \
     # Script to fix volumes permissions via sudo.
     echo "find ${APP_ROOT} ${FILES_DIR} -maxdepth 0 -uid 0 -type d -exec chown wodby:wodby {} +" > /usr/local/bin/init_volumes; \
