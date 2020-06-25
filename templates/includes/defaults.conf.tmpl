@@ -23,6 +23,12 @@ location = /humans.txt {
     access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
 }
 
+location = /ads.txt {
+    allow all;
+    log_not_found off;
+    access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
+}
+
 location @empty {
     expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
     empty_gif;
@@ -57,8 +63,12 @@ location ~ "^/ngx_pagespeed_beacon$" { }
 {{ end }}
 {{ end }}
 
+location ^~ /.well-known/ {
+    allow all;
+}
+
 {{ if not (getenv "NGINX_ALLOW_ACCESS_HIDDEN_FILES") }}
-location ~ /\.(!?well-known) {
+location ~ /\. {
     deny all;
 }
 {{ end }}
