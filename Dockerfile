@@ -1,13 +1,31 @@
 ARG BASE_IMAGE_TAG
 
-FROM wodby/alpine:${BASE_IMAGE_TAG}
+FROM wodby/alpine:3.8-2.5.0
 
 ARG NGINX_VER
+ARG TAG
 
 ENV NGINX_VER="${NGINX_VER}" \
     APP_ROOT="/var/www/html" \
     FILES_DIR="/mnt/files" \
-    NGINX_VHOST_PRESET="html"
+    NGINX_VHOST_PRESET="html" \
+    NGINX_VHOST_PRESET="${NGINX_VHOST_PRESET}" \
+    NGINX_UP_VER="0.9.1" \
+    MOD_PAGESPEED_VER=1.13.35.2 \
+    NGX_PAGESPEED_VER=1.13.35.2 \
+    APP_ROOT="/var/www/html" \
+    FILES_DIR="/mnt/files" \
+    NGX_MODSECURITY_VER="1.0.0" \
+    MODSECURITY_VER="3.0.3" \
+    OWASP_CRS_VER="3.1.0" \
+    NGINX_DRUPAL_HIDE_HEADERS="On" \
+    NGINX_SERVER_TOKENS="off" \
+    NGX_COOKIE_FLAG_VER="1.1.0" \
+    NGINX_FASTCGI_BUFFERING="off" \
+    NGINX_LOG_FORMAT_OVERRIDE="$$http_x_real_ip - $$request - $$status" \
+    DEPLOY_TAG=${TAG}
+
+RUN echo "Building nginx image containing the vhost file for : $NGINX_VHOST_PRESET"
 
 RUN set -ex; \
     \

@@ -143,6 +143,7 @@ http {
     add_header                  X-Content-Type-Options nosniff;
     {{ end }}
 
+    add_header Strict-Transport-Security "max-age=31536000";
     map $uri $no_slash_uri {
         ~^/(?<no_slash>.*)$ $no_slash;
     }
