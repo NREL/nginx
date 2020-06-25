@@ -60,6 +60,10 @@ location / {
         return 404;
     }
 
+    location ^~ /wp-content/uploads/woocommerce_uploads {
+        deny all;
+    }
+
     location ~* /wp-content/uploads/.+\.txt {
         access_log {{ getenv "NGINX_STATIC_ACCESS_LOG" "off" }};
         expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
@@ -70,7 +74,7 @@ location / {
         open_file_cache_errors {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_ERRORS" "off" }};
     }
 
-    location ~* ^.*(\.(?:git|svn|htaccess|txt|pot?))$ {
+    location ~* .+\.(?:txt|pot|sh|.*sql?)$ {
         return 404;
     }
 

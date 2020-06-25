@@ -1,8 +1,6 @@
 -include env_make
 
-# NGINX_VER ?= 1.17.8
-# NGINX_VER ?= latest
-NGINX_VER ?= 1.19-5.10.0
+NGINX_VER ?= 1.19.0
 NGINX_MINOR_VER ?= $(shell echo "${NGINX_VER}" | grep -oE '^[0-9]+\.[0-9]+')
 
 REGISTRY-IDS = 407445147104
@@ -40,6 +38,8 @@ test:
 	cd ./tests/basic && IMAGE=$(REPO):$(TAG) ./run.sh
 	cd ./tests/php && IMAGE=$(REPO):$(TAG) ./run.sh
 	cd ./tests/wordpress && IMAGE=$(REPO):$(TAG) ./run.sh
+	# no Drupal9 docker image yet.
+	#cd ./tests/drupal/9 && IMAGE=$(REPO):$(TAG) ./run.sh
 	cd ./tests/drupal/8 && IMAGE=$(REPO):$(TAG) ./run.sh
 	cd ./tests/drupal/7 && IMAGE=$(REPO):$(TAG) ./run.sh
 	cd ./tests/drupal/6 && IMAGE=$(REPO):$(TAG) ./run.sh

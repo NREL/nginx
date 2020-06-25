@@ -4,7 +4,7 @@ index index.php index.html;
 
 include fastcgi.conf;
 
-fastcgi_pass_header "X-Accel-Buffering";
+add_header  X-XSS-Protection '1; mode=block';
 
 {{ if getenv "NGINX_DRUPAL_HIDE_HEADERS" }}
 fastcgi_hide_header 'X-Drupal-Cache';
@@ -98,30 +98,12 @@ location / {
         expires {{ getenv "NGINX_STATIC_EXPIRES" "1y" }};
 
         add_header Pragma "cache";
-        add_header Cache-Control "public, max-age=31536000, immutable'; ";
-        {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}
-        add_header X-XSS-Protection '1; mode=block' always;
-        add_header X-Frame-Options SAMEORIGIN always;
-        add_header X-Content-Type-Options nosniff always;
-        add_header Strict-Transport-Security "max-age=31536000";
-        {{ end }}
+        add_header Cache-Control "public";
+
         open_file_cache {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE" "max=1000 inactive=30s" }};
         open_file_cache_valid {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_VALID" "30s" }};
         open_file_cache_min_uses {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_MIN_USES" "2" }};
         open_file_cache_errors {{ getenv "NGINX_STATIC_OPEN_FILE_CACHE_ERRORS" "off" }};
-
-        gzip_static on;
-        brotli_static on;
-        location ~* ^.+\.(?:svgz|tgz|gz)$ {
-            gzip off;
-            add_header Content-Encoding gzip;
-            {{ if not (getenv "NGINX_NO_DEFAULT_HEADERS") }}
-            add_header X-XSS-Protection '1; mode=block' always;
-            add_header X-Frame-Options SAMEORIGIN always;
-            add_header X-Content-Type-Options nosniff always;
-            add_header Strict-Transport-Security "max-age=31536000";
-        {{ end }}
-        }
 
         {{ if getenv "NGINX_STATIC_404_TRY_INDEX" }}
         try_files $uri @drupal;
@@ -142,7 +124,6 @@ location @drupal {
     fastcgi_param QUERY_STRING $query_string;
     fastcgi_param SCRIPT_NAME /index.php;
     fastcgi_param SCRIPT_FILENAME $document_root/index.php;
-    fastcgi_param WWW_NREL {{ getenv "WWW_NREL" "PROD" }};
     fastcgi_pass php;
     track_uploads {{ getenv "NGINX_TRACK_UPLOADS" "uploads 60s" }};
 }
@@ -192,22 +173,6 @@ location ~* ^/update.php {
     fastcgi_param QUERY_STRING $args;
     fastcgi_param SCRIPT_NAME /update.php;
     fastcgi_param SCRIPT_FILENAME $document_root/update.php;
-    fastcgi_pass php;
-}
-
-location ~* ^/import-old-data-from-json.php {
-    include fastcgi.conf;
-    fastcgi_param QUERY_STRING $args;
-    fastcgi_param SCRIPT_NAME /import-old-data-from-json.php;
-    fastcgi_param SCRIPT_FILENAME $document_root/import-old-data-from-json.php;
-    fastcgi_pass php;
-}
-
-location ~* ^/create-default-content.php {
-    include fastcgi.conf;
-    fastcgi_param QUERY_STRING $args;
-    fastcgi_param SCRIPT_NAME /create-default-content.php;
-    fastcgi_param SCRIPT_FILENAME $document_root/create-default-content.php;
     fastcgi_pass php;
 }
 

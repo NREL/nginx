@@ -26,7 +26,7 @@
 
 ## Docker Images
 
-❗For better reliability we release images with stability tags (`wodby/nginx:1.17-X.X.X`) which correspond to [git tags](https://github.com/wodby/nginx/releases). We strongly recommend using images only with stability tags. 
+❗For better reliability we release images with stability tags (`wodby/nginx:1.19-X.X.X`) which correspond to [git tags](https://github.com/wodby/nginx/releases). We strongly recommend using images only with stability tags. 
 
 Overview:
 
@@ -37,7 +37,9 @@ Overview:
 
 Supported tags and respective `Dockerfile` links:
 
-- `1.17`, `1`, `latest` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
+- `1.19`, `1`, `latest` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
+- `1.18` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
+- `1.17` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
 - `1.16` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
 - `1.15` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
 - `1.14` [_(Dockerfile)_](https://github.com/wodby/nginx/tree/master/Dockerfile)
@@ -203,6 +205,7 @@ Compiled as a dynamic module, disabled by default. To enable set `$NGINX_MODSECU
 Applied to all presets by default, can be disabled via `$NGINX_VHOST_NO_DEFAULTS`:
 
 - `/.well-known/` location supported
+- `/ads.txt` allowed
 - `/robots.txt` allowed
 - `/humans.txt` allowed
 - `/favicon.ico` allowed
@@ -288,17 +291,19 @@ Overridden default values:
 - [Preset template](https://github.com/wodby/nginx/blob/master/templates/presets/wordpress.conf.tmpl)
 - Usage: add `NGINX_VHOST_PRESET=wordpress`, optionally modify `NGINX_BACKEND_HOST`  
 - Access to `*.txt` files allowed only if they are located in uploads directory
+- Access to `/wp-content/uploads/woocommerce_uploads` disallowed
 - There are 2 ways to add sitemap.xml locations:
     - For plugin [Google XML Sitemap](https://wordpress.org/plugins/google-sitemap-generator/) add `$NGINX_WP_GOOGLE_XML_SITEMAP=1`
     - For plugin [Yoast SEO](https://kb.yoast.com/kb/xml-sitemaps-nginx/) add `$NGINX_WP_YOAST_XML_SITEMAP=1`
 
 #### Drupal
 
-- Preset templates: [Drupal 8], [Drupal 7], [Drupal 6]
-- Usage: add `NGINX_VHOST_PRESET=` with the value of `drupal8`, `drupal7` or `drupal6`. Optionally modify `NGINX_BACKEND_HOST`
+- Preset templates: [Drupal 9], [Drupal 8], [Drupal 7], [Drupal 6]
+- Usage: add `NGINX_VHOST_PRESET=` with the value of `drupal9`, `drupal8`, `drupal7` or `drupal6`. Optionally modify `NGINX_BACKEND_HOST`
 - If you want to use [stage_file_proxy](https://www.drupal.org/project/stage_file_proxy) module, set `$NGINX_STATIC_404_TRY_INDEX=1` to redirect 404 static files requests to Drupal
 - Access to `*.txt` files allowed only if they are located in files directory 
 
+[Drupal 9]: https://github.com/wodby/nginx/blob/master/templates/presets/drupal9.conf.tmpl
 [Drupal 8]: https://github.com/wodby/nginx/blob/master/templates/presets/drupal8.conf.tmpl
 [Drupal 7]: https://github.com/wodby/nginx/blob/master/templates/presets/drupal7.conf.tmpl
 [Drupal 6]: https://github.com/wodby/nginx/blob/master/templates/presets/drupal6.conf.tmpl
@@ -322,17 +327,15 @@ Usage:
 make COMMAND [params ...]
 
 commands:
-    git-clone [url branch]
+    init
     git-checkout [target is_hash]
     check-ready [host max_try wait_seconds delay_seconds]
- 
+
 default params values:
     host localhost
     max_try 1
     wait_seconds 1
     delay_seconds 0
-    is_hash 0
-    branch ""    
 ```
 
 [brotli]: https://github.com/google/ngx_brotli

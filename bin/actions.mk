@@ -1,5 +1,3 @@
-.PHONY: git-clone git-checkout check-ready check-live
-
 host ?= localhost
 max_try ?= 1
 wait_seconds ?= 1
@@ -11,15 +9,18 @@ service = Nginx
 
 default: check-ready
 
+init:
+	init
+.PHONY: init
+
 check-ready:
     ifeq ($(NGINX_HTTP2),)
 		wait_for "$(command_http)" $(service) $(host) $(max_try) $(wait_seconds) $(delay_seconds)
     else
 		wait_for "$(command_http2)" $(service) $(host) $(max_try) $(wait_seconds) $(delay_seconds)
     endif
+.PHONY: check-ready
 
 check-live:
 	@echo "OK"
-
-flush-pagespeed-server-side-cache:
-	touch /var/cache/ngx_pagespeed/cache.flush
+.PHONY: check-live
