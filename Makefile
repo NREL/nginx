@@ -13,7 +13,9 @@ else
     BASE_IMAGE_TAG := $(ALPINE_VER)-$(BASE_IMAGE_STABILITY_TAG)
 endif
 
-REPO = wodby/nginx
+REGISTRY-IDS = 407445147104
+REPO ?= $(REGISTRY-IDS).dkr.ecr.us-west-2.amazonaws.com/communications-nginx
+
 NAME = nginx-$(NGINX_MINOR_VER)
 
 ifneq ($(STABILITY_TAG),)
