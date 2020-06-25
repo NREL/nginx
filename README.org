@@ -2,5 +2,6 @@
 
 
 #+begin_src shell
-export TAG=1.17.4.1; export NGINX_VER='1.17.4'; make
+# export TAG=1.17.8.3; make
+export TAG=1.19-5.10.0; make
 #+end_src

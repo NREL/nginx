@@ -1,6 +1,8 @@
 -include env_make
 
-NGINX_VER ?= 1.17.8
+# NGINX_VER ?= 1.17.8
+# NGINX_VER ?= latest
+NGINX_VER ?= 1.19-5.10.0
 NGINX_MINOR_VER ?= $(shell echo "${NGINX_VER}" | grep -oE '^[0-9]+\.[0-9]+')
 
 REGISTRY-IDS = 407445147104
